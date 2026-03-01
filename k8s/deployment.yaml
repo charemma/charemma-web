@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: charemma-web
+  labels:
+    app: charemma-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: charemma-web
+  template:
+    metadata:
+      labels:
+        app: charemma-web
+    spec:
+      containers:
+        - name: charemma-web
+          image: ghcr.io/charemma/charemma-web:latest
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: ghcr-secret
