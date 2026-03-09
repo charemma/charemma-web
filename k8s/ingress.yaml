@@ -17,17 +17,6 @@ spec:
                 name: charemma-web
                 port:
                   number: 80
-    - host: www.charemma.de
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: charemma-web
-                port:
-                  number: 80
   tls:
     - hosts:
         - charemma.de
-        - www.charemma.de
