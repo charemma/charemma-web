@@ -18,36 +18,15 @@ Starts a Python HTTP server on http://localhost:8080.
 The website runs on a VPS with k3s (Traefik ingress + Let's Encrypt).
 The NixOS config for the VPS lives in [nixos-config](https://github.com/charemma/nixos-config).
 
-### Initial setup
+Deployment is fully managed via GitOps using ArgoCD. The ArgoCD Application
+is defined in [nixos-config/infra/vps/apps/charemma-web.yaml](https://github.com/charemma/nixos-config/blob/main/infra/vps/apps/charemma-web.yaml)
+and points at the `k8s/` directory in this repo.
 
-Prerequisites: k3s is running on the VPS, kubectl is configured locally.
+### How it works
 
-1. The container image must exist on ghcr.io. This happens automatically on the
-   first push to main (GitHub Actions). The package must be public on ghcr.io,
-   otherwise k3s needs an imagePullSecret.
+1. Push to main triggers GitHub Actions
+2. Actions builds and pushes the container image to ghcr.io
+3. Actions commits the new image SHA tag back to `k8s/deployment.yaml`
+4. ArgoCD detects the manifest change and syncs the deployment automatically
 
-2. Apply the manifests:
-   ```
-   kubectl apply -f k8s/
-   ```
-
-3. Verify everything is running:
-   ```
-   kubectl get pods
-   kubectl get ingress
-   ```
-
-### Updates
-
-Every push to main builds a new image via GitHub Actions. To make the pod pull
-the latest image:
-
-```
-kubectl rollout restart deployment charemma-web
-```
-
-Or from the nixos-config repo:
-
-```
-just deploy-web
-```
+No manual `kubectl` commands needed.
