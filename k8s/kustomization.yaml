@@ -4,3 +4,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - ingress.yaml
+images:
+  - name: ghcr.io/charemma/charemma-web
+    newName: ghcr.io/charemma/charemma-web
+    newTag: sha-90cc9fc
