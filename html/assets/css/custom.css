@@ -3,3 +3,10 @@
  *
  * Here you can add your custom CSS code.
  */
+
+/* Scale down the name on small screens so "Emmanouilidis" fits without overflow */
+@media (max-width: 600px) {
+  .c-brand__title.t-title {
+    font-size: clamp(2.5rem, 12vw, 4.8rem);
+  }
+}
