@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: charemma-web
-          image: ghcr.io/charemma/charemma-web:sha-aa1faff
+          image: ghcr.io/charemma/charemma-web:latest
           ports:
             - containerPort: 80
