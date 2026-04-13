@@ -5,7 +5,7 @@ set -e
 # Usage: curl -sSL https://charemma.de/ikno/install.sh | sh
 
 VERSION="${IKNO_VERSION:-latest}"
-INSTALL_DIR="${IKNO_INSTALL_DIR:-/usr/local/bin}"
+INSTALL_DIR="${IKNO_INSTALL_DIR:-$HOME/.local/bin}"
 
 # Detect OS and architecture
 OS="$(uname -s)"
@@ -50,7 +50,6 @@ TARBALL="ikno_${VERSION}_${OS}_${ARCH}.tar.gz"
 DOWNLOAD_URL="https://github.com/charemma/ikno/releases/download/v${VERSION}/${TARBALL}"
 
 echo "Downloading ikno v${VERSION} for ${OS}/${ARCH}..."
-echo "URL: ${DOWNLOAD_URL}"
 
 # Download and extract
 TMP_DIR=$(mktemp -d)
@@ -62,29 +61,38 @@ elif command -v wget > /dev/null 2>&1; then
     wget -q "$DOWNLOAD_URL" -O "$TARBALL"
 else
     echo "Error: curl or wget is required"
+    rm -rf "$TMP_DIR"
     exit 1
 fi
 
 # Extract binary
 tar -xzf "$TARBALL" ikno
 
+# Create install dir if needed
+mkdir -p "$INSTALL_DIR"
+
 # Install
-echo "Installing to ${INSTALL_DIR}..."
-if [ -w "$INSTALL_DIR" ]; then
-    mv ikno "$INSTALL_DIR/ikno"
-else
-    echo "Requesting sudo access to install to ${INSTALL_DIR}..."
-    sudo mv ikno "$INSTALL_DIR/ikno"
-fi
+mv ikno "$INSTALL_DIR/ikno"
+chmod +x "$INSTALL_DIR/ikno"
 
 # Cleanup
 cd - > /dev/null
 rm -rf "$TMP_DIR"
 
 echo ""
-echo "ikno v${VERSION} installed successfully!"
-echo "Run 'ikno --version' to verify"
+echo "ikno v${VERSION} installed to ${INSTALL_DIR}/ikno"
 echo ""
+
+# Check if install dir is in PATH
+case ":$PATH:" in
+    *":$INSTALL_DIR:"*) ;;
+    *)
+        echo "Add this to your shell config (~/.bashrc, ~/.zshrc):"
+        echo "  export PATH=\"$INSTALL_DIR:\$PATH\""
+        echo ""
+        ;;
+esac
+
 echo "Get started:"
-echo "  ikno source add git ."
-echo "  ikno recap today"
+echo "  ikno init"
+echo "  ikno recap thisweek"
